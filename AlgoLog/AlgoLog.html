@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AlgoLog - 코딩 테스트 기록장</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -25,17 +24,10 @@
         }
     </script>
 
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Marked.js (Markdown Parser) -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-    <!-- Highlight.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/vs2015.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
@@ -43,23 +35,13 @@
         
         body { font-family: 'Pretendard', sans-serif; }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .dark ::-webkit-scrollbar-thumb { background: #475569; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        /* Heatmap specific */
-        .heatmap-grid { 
-            display: grid; 
-            grid-template-rows: repeat(7, 14px); 
-            grid-auto-columns: 14px; 
-            grid-auto-flow: column; 
-            gap: 4px; 
-            overflow-x: auto; 
-            padding-bottom: 8px;
-        }
+        .heatmap-grid { display: grid; grid-template-rows: repeat(7, 14px); grid-auto-columns: 14px; grid-auto-flow: column; gap: 4px; overflow-x: auto; padding-bottom: 8px; }
         .heatmap-cell { width: 14px; height: 14px; border-radius: 3px; background-color: #ebedf0; cursor: pointer; transition: transform 0.1s, border 0.1s; }
         .heatmap-cell:hover { transform: scale(1.1); }
         .heatmap-cell.selected { border: 2px solid #3b82f6; }
@@ -73,13 +55,11 @@
         .dark .heatmap-cell[data-level="3"] { background-color: #26a641; }
         .dark .heatmap-cell[data-level="4"] { background-color: #39d353; }
 
-        /* Live Editor specific */
         .live-editor-container { position: relative; width: 100%; height: 320px; border-radius: 0.5rem; overflow: hidden; background-color: #1e1e1e; border: 1px solid #374151; }
         .live-editor-pre { position: absolute; inset: 0; margin: 0; padding: 1rem; overflow: hidden; color: #d4d4d4; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 0.875rem; line-height: 1.5; pointer-events: none; white-space: pre-wrap; word-break: break-all; }
         .live-editor-textarea { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 1rem; background: transparent; color: transparent; caret-color: white; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 0.875rem; line-height: 1.5; resize: none; border: none; outline: none; z-index: 10; white-space: pre-wrap; word-break: break-all; }
         .live-editor-textarea::placeholder { color: #6b7280; }
 
-        /* Markdown Styles */
         .markdown-body h1 { font-size: 1.5em; font-weight: bold; margin-bottom: 0.5em; }
         .markdown-body h2 { font-size: 1.25em; font-weight: bold; margin-top: 1em; margin-bottom: 0.5em; }
         .markdown-body ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1em; }
@@ -92,19 +72,19 @@
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 h-screen flex overflow-hidden transition-colors duration-200">
 
-    <!-- Loading Overlay -->
+    <!-- 로딩 오버레이 -->
     <div id="loading-overlay" class="fixed inset-0 bg-white/80 dark:bg-gray-900/80 z-[100] hidden flex-col items-center justify-center backdrop-blur-sm transition-opacity">
         <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm w-full border border-gray-100 dark:border-gray-700">
             <i data-lucide="loader-2" class="w-12 h-12 animate-spin mb-4 text-primary-500"></i>
-            <h3 class="text-xl font-bold mb-2 text-center text-gray-900 dark:text-gray-100" id="loading-title">AI가 분석을 진행하고 있습니다...</h3>
-            <p class="text-gray-500 dark:text-gray-400 text-sm text-center">알고리즘 분류, 난이도 측정 및 피드백 생성 중<br>(최대 1분 소요)</p>
+            <h3 class="text-xl font-bold mb-2 text-center text-gray-900 dark:text-gray-100" id="loading-title">AI 처리 중입니다...</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm text-center">잠시만 기다려주세요<br>(최대 1분 소요)</p>
             <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mt-6 overflow-hidden">
                 <div class="bg-primary-500 h-1.5 rounded-full animate-[pulse_1s_ease-in-out_infinite]" style="width: 100%"></div>
             </div>
         </div>
     </div>
 
-    <!-- Sidebar -->
+    <!-- 사이드바 -->
     <aside class="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-colors duration-200 z-10 hidden md:flex shrink-0">
         <div class="p-6 flex items-center gap-3 border-b border-gray-200 dark:border-gray-700">
             <i data-lucide="code-2" class="w-8 h-8 text-primary-600 dark:text-primary-500"></i>
@@ -123,7 +103,7 @@
             </button>
         </nav>
 
-        <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
             <div class="flex items-center justify-between px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
                 <span class="text-sm font-medium">테마</span>
                 <button onclick="toggleTheme()" class="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
@@ -134,7 +114,7 @@
         </div>
     </aside>
 
-    <!-- Mobile Header -->
+    <!-- 모바일 헤더 -->
     <div class="md:hidden fixed top-0 w-full bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-20 flex justify-between items-center p-4">
         <div class="flex items-center gap-2">
             <i data-lucide="code-2" class="w-6 h-6 text-primary-600"></i>
@@ -145,7 +125,7 @@
         </button>
     </div>
 
-    <!-- Mobile Menu Dropdown -->
+    <!-- 모바일 메뉴 -->
     <div id="mobile-menu" class="hidden md:hidden fixed top-16 w-full bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-20 shadow-lg">
         <nav class="flex flex-col p-2">
             <button onclick="navigate('dashboard'); document.getElementById('mobile-menu').classList.add('hidden')" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">대시보드</button>
@@ -157,17 +137,16 @@
         </nav>
     </div>
 
-    <!-- Main Content -->
+    <!-- 메인 콘텐츠 영역 -->
     <main class="flex-1 overflow-y-auto mt-16 md:mt-0 relative w-full">
         
-        <!-- View: Dashboard -->
+        <!-- 대시보드 화면 -->
         <div id="view-dashboard" class="p-4 md:p-8 max-w-7xl mx-auto view-section">
             <header class="mb-8">
                 <h2 class="text-3xl font-bold mb-2">대시보드</h2>
                 <p class="text-gray-500 dark:text-gray-400">지금까지의 코딩 테스트 문제 풀이 현황입니다.</p>
             </header>
 
-            <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4">
                     <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg">
@@ -207,18 +186,13 @@
                 </div>
             </div>
 
-            <!-- Heatmap + Detail View Split Layout -->
             <div class="flex flex-col lg:flex-row gap-6 mb-8 items-start">
-                
-                <!-- Heatmap Calendar -->
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 w-fit max-w-full overflow-hidden shrink-0">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-bold flex items-center gap-2"><i data-lucide="calendar-days" class="w-5 h-5"></i> 활동 잔디 (최근 3개월)</h3>
                     </div>
                     <div class="overflow-x-auto pb-2">
-                        <div id="heatmap-container" class="heatmap-grid min-w-max">
-                            <!-- Heatmap generated by JS -->
-                        </div>
+                        <div id="heatmap-container" class="heatmap-grid min-w-max"></div>
                     </div>
                     <div class="flex justify-end items-center gap-2 mt-2 text-xs text-gray-500 dark:text-gray-400">
                         <span>적음</span>
@@ -231,7 +205,6 @@
                     </div>
                 </div>
 
-                <!-- Heatmap Detail Panel (Day's problems) -->
                 <div id="heatmap-detail-panel" class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex-1 w-full min-h-[220px] lg:h-full hidden lg:flex flex-col">
                     <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-primary-600 dark:text-primary-400" id="detail-date-title">
                         <i data-lucide="target" class="w-5 h-5"></i> 날짜를 선택하세요
@@ -244,38 +217,22 @@
                 </div>
             </div>
 
-            <!-- Charts Grid Container -->
             <div id="charts-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 hidden">
-                <!-- Difficulty Chart -->
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 md:col-span-2">
                     <h3 class="text-lg font-bold mb-4">난이도별 푼 개수</h3>
-                    <div class="relative h-64">
-                        <canvas id="difficultyChart"></canvas>
-                    </div>
+                    <div class="relative h-64"><canvas id="difficultyChart"></canvas></div>
                 </div>
-
-                <!-- Algorithm Chart (Doughnut) -->
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 md:col-span-1">
                     <h3 class="text-lg font-bold mb-4">알고리즘 별 푼 문제</h3>
-                    <div class="relative h-64 flex justify-center">
-                        <canvas id="algorithmChart"></canvas>
-                    </div>
+                    <div class="relative h-64 flex justify-center"><canvas id="algorithmChart"></canvas></div>
                 </div>
-
-                <!-- Resolution Method Chart (Pie) -->
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 md:col-span-1">
                     <h3 class="text-lg font-bold mb-4">해결 방식 분포</h3>
-                    <div class="relative h-64 flex justify-center">
-                        <canvas id="resolutionChart"></canvas>
-                    </div>
+                    <div class="relative h-64 flex justify-center"><canvas id="resolutionChart"></canvas></div>
                 </div>
-
-                <!-- Recent Time Trend -->
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 md:col-span-2">
                     <h3 class="text-lg font-bold mb-4">최근 10문제 소요 시간 추이</h3>
-                    <div class="relative h-64 w-full">
-                        <canvas id="timeTrendChart"></canvas>
-                    </div>
+                    <div class="relative h-64 w-full"><canvas id="timeTrendChart"></canvas></div>
                 </div>
             </div>
             
@@ -285,7 +242,7 @@
             </div>
         </div>
 
-        <!-- View: Add / Edit Record -->
+        <!-- 기록 추가 화면 -->
         <div id="view-add" class="hidden p-4 md:p-8 max-w-4xl mx-auto view-section">
             <header class="mb-8">
                 <h2 class="text-3xl font-bold mb-2" id="form-title">새로운 기록 추가</h2>
@@ -294,7 +251,6 @@
 
             <form id="add-form" class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 space-y-6" onsubmit="handleFormSubmit(event)">
                 
-                <!-- Link Input & AI Analyze Button -->
                 <div class="flex flex-col md:flex-row gap-4 items-end bg-blue-50 dark:bg-blue-900/10 p-4 rounded-xl border border-blue-100 dark:border-blue-900/30">
                     <div class="flex-1 w-full">
                         <label class="block text-sm font-medium mb-2 text-blue-900 dark:text-blue-300">문제 링크 (URL)</label>
@@ -304,9 +260,7 @@
                         <i data-lucide="sparkles" class="w-4 h-4"></i> AI 정보 자동 추출
                     </button>
                 </div>
-                <p class="text-xs text-gray-500 -mt-4 pl-1"><i data-lucide="info" class="inline w-3 h-3"></i> 링크를 입력한 후 버튼을 누르면 문제 정보를 폼에 채워줍니다. (AI 채점은 저장 시 진행됩니다)</p>
-
-                <!-- Extracted or Manual Data (Editable) -->
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                     <div>
                         <label class="block text-sm font-medium mb-2">저지 사이트 *</label>
@@ -331,7 +285,6 @@
 
                 <hr class="border-gray-200 dark:border-gray-700">
 
-                <!-- Meta Info -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label class="block text-sm font-medium mb-2">푼 날짜 *</label>
@@ -356,9 +309,7 @@
                         <label class="block text-sm font-medium mb-2">체감 난이도 *</label>
                         <div class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 flex items-center justify-between h-[46px]">
                             <span class="text-sm text-gray-500 font-medium" id="fire-label">보통</span>
-                            <div class="flex items-center gap-1 cursor-pointer" id="fire-input-container">
-                                <!-- Generated by JS -->
-                            </div>
+                            <div class="flex items-center gap-1 cursor-pointer" id="fire-input-container"></div>
                             <input type="hidden" id="f-perceived-diff" value="3">
                         </div>
                     </div>
@@ -372,11 +323,10 @@
                     </div>
                 </div>
 
-                <!-- Code Input -->
                 <div>
                     <label class="block text-sm font-medium mb-2 flex justify-between items-end">
                         <span>제출 코드 *</span>
-                        <span class="text-xs text-primary-500 font-normal">IDE 스타일 하이라이팅 (채점 필수 요소)</span>
+                        <span class="text-xs text-primary-500 font-normal">채점 필수 요소</span>
                     </label>
                     <div class="live-editor-container focus-within:ring-2 focus-within:ring-primary-500">
                         <pre id="code-pre" class="live-editor-pre" aria-hidden="true"><code id="code-highlight" class="language-java !bg-transparent !p-0"></code></pre>
@@ -384,18 +334,15 @@
                     </div>
                 </div>
 
-                <!-- Markdown Notes -->
                 <div>
                     <label class="block text-sm font-medium mb-2 flex justify-between items-end">
                         <span>풀이 노트 및 메모</span>
                         <span class="text-xs text-gray-400 font-normal">Markdown 지원</span>
                     </label>
-                    <textarea id="f-notes" rows="4" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:outline-none" placeholder="접근 방식, 실수했던 부분 등을 자유롭게 기록하세요."></textarea>
+                    <textarea id="f-notes" rows="4" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:outline-none" placeholder="자유롭게 기록하세요."></textarea>
                 </div>
 
-                <!-- Submit -->
                 <div class="pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 items-center">
-                    <span class="text-xs text-gray-500 mr-auto"><i data-lucide="sparkles" class="inline w-3 h-3 text-blue-500"></i> 저장 시 AI가 제출된 코드를 채점하고 피드백을 생성합니다.</span>
                     <button type="button" onclick="cancelEditOrReset()" id="btn-cancel" class="px-6 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium">폼 초기화</button>
                     <button type="submit" id="btn-submit" class="px-8 py-2.5 rounded-lg bg-gray-800 dark:bg-gray-100 hover:bg-gray-900 dark:hover:bg-white text-white dark:text-gray-900 transition-colors font-bold flex items-center gap-2">
                         <i data-lucide="save" class="w-4 h-4"></i> 피드백 생성 및 저장
@@ -404,24 +351,23 @@
             </form>
         </div>
 
-        <!-- View: Problem List (With Advanced Filters) -->
+        <!-- 문제 목록 화면 -->
         <div id="view-list" class="hidden p-4 md:p-8 max-w-7xl mx-auto view-section">
             <header class="mb-6 flex flex-col md:flex-row md:justify-between md:items-end gap-4">
                 <div>
                     <h2 class="text-3xl font-bold mb-2" id="list-title">문제 목록</h2>
-                    <p class="text-gray-500 dark:text-gray-400">고급 필터를 이용해 기록된 문제를 검색해보세요.</p>
+                    <p class="text-gray-500 dark:text-gray-400">기록된 문제를 검색해보세요.</p>
                 </div>
             </header>
 
-            <!-- Advanced Filter Bar -->
             <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 flex flex-col md:flex-row gap-4 items-center">
                 <div class="relative flex-1 w-full">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
-                    <input type="text" id="filter-search" placeholder="문제 이름, 링크, 분류, 사이트 검색..." oninput="renderList()" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none">
+                    <input type="text" id="filter-search" placeholder="문제 이름, 분류 검색..." oninput="renderList()" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none">
                 </div>
                 
-                <div class="flex items-center gap-4 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 hide-scrollbar">
-                    <label class="flex items-center gap-2 whitespace-nowrap cursor-pointer bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-3 py-2.5 rounded-lg border border-red-100 dark:border-red-900/50 hover:bg-red-100 dark:hover:bg-red-900/40 transition">
+                <div class="flex items-center gap-4 w-full md:w-auto">
+                    <label class="flex items-center gap-2 cursor-pointer bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-4 py-2.5 rounded-lg border border-red-100 dark:border-red-900/50 hover:bg-red-100 dark:hover:bg-red-900/40 transition font-medium">
                         <input type="checkbox" id="filter-retry" onchange="renderList()" class="w-4 h-4 rounded text-red-600 focus:ring-red-500">
                         <i data-lucide="alert-triangle" class="w-4 h-4"></i> 다시 풀기만
                     </label>
@@ -443,9 +389,7 @@
                                 <th class="px-6 py-4 font-medium text-gray-500 dark:text-gray-400">푼 날짜</th>
                             </tr>
                         </thead>
-                        <tbody id="list-tbody" class="divide-y divide-gray-100 dark:divide-gray-700">
-                            <!-- Rows generated by JS -->
-                        </tbody>
+                        <tbody id="list-tbody" class="divide-y divide-gray-100 dark:divide-gray-700"></tbody>
                     </table>
                 </div>
                 <div id="list-empty" class="hidden p-12 text-center text-gray-500 dark:text-gray-400 flex flex-col items-center">
@@ -454,130 +398,148 @@
                 </div>
             </div>
         </div>
-
     </main>
 
-    <!-- Modal: Problem Detail & AI Feedback -->
-    <div id="detail-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white dark:bg-gray-800 w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden relative">
-            
-            <!-- Modal Header -->
-            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
-                <div class="flex items-center gap-3">
-                    <span id="mdl-site" class="px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 rounded text-xs font-bold"></span>
-                    <h3 id="mdl-title" class="text-2xl font-bold flex items-center gap-2">
-                        <!-- title goes here -->
-                    </h3>
-                    <a id="mdl-link" target="_blank" class="text-gray-400 hover:text-blue-500 transition" title="문제 링크로 이동"><i data-lucide="external-link" class="w-5 h-5"></i></a>
-                    <span id="mdl-retry-badge" class="hidden px-2 py-1 bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400 rounded text-xs font-bold flex items-center gap-1"><i data-lucide="alert-triangle" class="w-3 h-3"></i> Retry</span>
-                </div>
-                <div>
+    <!-- 상세보기 모달 (전체 화면 스크롤 적용) -->
+    <div id="detail-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0 backdrop-blur-sm bg-black/50">
+            <div class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-4xl flex flex-col">
+                
+                <!-- 모달 헤더 -->
+                <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                    <div class="flex items-center gap-3">
+                        <span id="mdl-site" class="px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 rounded text-xs font-bold"></span>
+                        <h3 id="mdl-title" class="text-2xl font-bold flex items-center gap-2"></h3>
+                        <a id="mdl-link" target="_blank" class="text-gray-400 hover:text-blue-500 transition" title="문제 링크로 이동"><i data-lucide="external-link" class="w-5 h-5"></i></a>
+                        <span id="mdl-retry-badge" class="hidden px-2 py-1 bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400 rounded text-xs font-bold flex items-center gap-1"><i data-lucide="alert-triangle" class="w-3 h-3"></i> Retry</span>
+                    </div>
                     <button onclick="closeModal()" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
-            </div>
 
-            <!-- Modal Body -->
-            <div class="p-6 overflow-y-auto flex-1 flex flex-col gap-6" id="modal-content-area">
+                <!-- 모달 콘텐츠 -->
+                <div class="p-6 flex flex-col gap-6">
+                    <div class="flex flex-wrap gap-2 text-sm">
+                        <div class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4 text-gray-500"></i> <span id="mdl-date"></span></div>
+                        <div class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-gray-500"></i> <span id="mdl-time"></span>분</div>
+                        <div class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center gap-2"><i data-lucide="bar-chart" class="w-4 h-4 text-blue-500"></i> 난이도: <span id="mdl-actual-diff" class="font-semibold text-blue-600 dark:text-blue-400"></span></div>
+                        <div class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center gap-2"><i data-lucide="tag" class="w-4 h-4 text-blue-500"></i> 분류: <span id="mdl-algo" class="font-semibold text-blue-600 dark:text-blue-400"></span></div>
+                        <div class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center gap-1" id="mdl-perceived-diff-container"></div>
+                        <div class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center gap-2"><i data-lucide="info" class="w-4 h-4 text-gray-500"></i> <span id="mdl-resolution"></span></div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-bold mb-3 flex items-center gap-2 border-b border-gray-200 dark:border-gray-700 pb-2"><i data-lucide="file-text" class="w-5 h-5 text-primary-500"></i> 풀이 노트</h4>
+                        <div id="mdl-notes" class="markdown-body text-sm leading-relaxed bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700/50"></div>
+                    </div>
+
+                    <!-- AI 피드백 (최소 높이 보장) -->
+                    <div id="ai-feedback-container" class="border border-blue-200 dark:border-blue-900/50 rounded-xl overflow-hidden shadow-sm flex flex-col">
+                        <div class="bg-blue-50 dark:bg-blue-900/20 p-4 flex items-center gap-3 text-blue-800 dark:text-blue-300 font-bold border-b border-blue-100 dark:border-blue-900/50">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i> AI 채점 및 종합 피드백
+                        </div>
+                        <div class="p-6 bg-white dark:bg-gray-800 min-h-[300px]">
+                            <div id="ai-content" class="markdown-body text-sm leading-relaxed"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-bold mb-3 flex items-center gap-2 border-b border-gray-200 dark:border-gray-700 pb-2"><i data-lucide="code" class="w-5 h-5 text-primary-500"></i> 제출 코드</h4>
+                        <pre><code id="mdl-code" class="rounded-xl text-sm max-h-96 overflow-y-auto !bg-[#1e1e1e] !p-4 border border-gray-700 shadow-inner"></code></pre>
+                    </div>
+                </div>
                 
-                <!-- Info Badges -->
-                <div class="flex flex-wrap gap-2 text-sm">
-                    <div class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center gap-2">
-                        <i data-lucide="calendar" class="w-4 h-4 text-gray-500"></i> <span id="mdl-date"></span>
-                    </div>
-                    <div class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center gap-2">
-                        <i data-lucide="clock" class="w-4 h-4 text-gray-500"></i> <span id="mdl-time"></span>분
-                    </div>
-                    <div class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center gap-2">
-                        <i data-lucide="bar-chart" class="w-4 h-4 text-blue-500"></i> 난이도: <span id="mdl-actual-diff" class="font-semibold text-blue-600 dark:text-blue-400"></span>
-                    </div>
-                    <div class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center gap-2">
-                        <i data-lucide="tag" class="w-4 h-4 text-blue-500"></i> 분류: <span id="mdl-algo" class="font-semibold text-blue-600 dark:text-blue-400"></span>
-                    </div>
-                    <div class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center gap-1" id="mdl-perceived-diff-container">
-                        <!-- Fire icons injected here -->
-                    </div>
-                    <div class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center gap-2">
-                        <i data-lucide="info" class="w-4 h-4 text-gray-500"></i> <span id="mdl-resolution"></span>
-                    </div>
-                </div>
-
-                <!-- Notes (Markdown) -->
-                <div>
-                    <h4 class="text-lg font-bold mb-3 flex items-center gap-2 border-b border-gray-200 dark:border-gray-700 pb-2"><i data-lucide="file-text" class="w-5 h-5 text-primary-500"></i> 풀이 노트</h4>
-                    <div id="mdl-notes" class="markdown-body text-sm leading-relaxed bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700/50"></div>
-                </div>
-
-                <!-- AI Feedback Section (Forced Display) -->
-                <div id="ai-feedback-container" class="border border-blue-200 dark:border-blue-900/50 rounded-xl overflow-hidden shadow-sm flex flex-col">
-                    <div class="bg-blue-50 dark:bg-blue-900/20 p-4 flex items-center gap-3 text-blue-800 dark:text-blue-300 font-bold border-b border-blue-100 dark:border-blue-900/50">
-                        <i data-lucide="sparkles" class="w-5 h-5"></i>
-                        AI 채점 및 종합 피드백
-                    </div>
-                    <div class="p-6 bg-white dark:bg-gray-800 max-h-96 min-h-[150px] overflow-y-auto">
-                        <div id="ai-content" class="markdown-body text-sm leading-relaxed"></div>
-                    </div>
-                </div>
-
-                <!-- Code (IDE style syntax highlighting) -->
-                <div>
-                    <h4 class="text-lg font-bold mb-3 flex items-center gap-2 border-b border-gray-200 dark:border-gray-700 pb-2"><i data-lucide="code" class="w-5 h-5 text-primary-500"></i> 제출 코드</h4>
-                    <pre><code id="mdl-code" class="rounded-xl text-sm max-h-96 overflow-y-auto !bg-[#1e1e1e] !p-4 border border-gray-700 shadow-inner"></code></pre>
-                </div>
-
-            </div>
-            
-            <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex justify-between">
-                <button onclick="deleteCurrentRecord()" class="px-4 py-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i> 기록 삭제
-                </button>
-                <div class="flex gap-2">
-                    <button onclick="editCurrentRecord()" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition flex items-center gap-2">
-                        <i data-lucide="edit-3" class="w-4 h-4"></i> 기록 수정
+                <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex justify-between rounded-b-2xl">
+                    <!-- 삭제 버튼에 ID 동적 할당을 위해 id 부여 -->
+                    <button id="btn-delete-record" class="px-4 py-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i> 기록 삭제
                     </button>
-                    <button onclick="closeModal()" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg font-medium transition">닫기</button>
+                    <div class="flex gap-2">
+                        <button onclick="editCurrentRecord()" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition flex items-center gap-2">
+                            <i data-lucide="edit-3" class="w-4 h-4"></i> 기록 수정
+                        </button>
+                        <button onclick="closeModal()" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg font-medium transition">닫기</button>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- 토스트 알림 -->
     <div id="toast" class="toast fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 z-50">
         <i data-lucide="info" class="w-5 h-5 text-blue-400"></i>
         <span id="toast-msg" class="text-sm font-medium">알림 메시지</span>
     </div>
 
+    <!-- 커스텀 삭제 확인 모달 (새로 추가) -->
+    <div id="confirm-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-sm w-full shadow-2xl flex flex-col items-center">
+            <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center mb-4">
+                <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-2 text-gray-900 dark:text-gray-100">기록 삭제</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm text-center mb-6">정말 이 기록을 삭제하시겠습니까?<br>이 작업은 되돌릴 수 없습니다.</p>
+            <div class="flex gap-3 w-full">
+                <button onclick="closeConfirmModal()" class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm font-medium transition-colors">취소</button>
+                <button onclick="executeDelete()" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors">삭제</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // --- Core Data & State ---
-        let records = []; // 메모리(변수) 기반 데이터 관리
+        // Define showToast in the global scope BEFORE it's used
+        window.showToast = function(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // clear previous timeout if any
+            if (window.toastTimeout) {
+                clearTimeout(window.toastTimeout);
+            }
+            window.toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+                // hide it completely after transition
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
+        };
+
+        let records = []; 
         let currentRecordId = null; 
         let editingRecordId = null; 
-        
-        // Gemini API Configuration
+        let recordToDelete = null; 
         const apiKey = ""; 
+        let appCharts = [];
 
-        // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('f-date').valueAsDate = new Date();
             initFireRatingInput();
             initTheme();
             renderDashboard();
-            lucide.createIcons();
+            
+            // Only try to create icons if the function exists
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
         });
 
-        // --- Live Editor Logic ---
+        // --- 에디터 및 UI 로직 ---
         function updateCodeSyntax() {
             const textarea = document.getElementById('f-code');
             const codeHighlight = document.getElementById('code-highlight');
-            let text = textarea.value;
-            
-            text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            let text = textarea.value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             if(text.endsWith('\n')) text += ' ';
             
             codeHighlight.innerHTML = text;
             delete codeHighlight.dataset.highlighted;
-            hljs.highlightElement(codeHighlight);
+            
+            // Only try to highlight if the function exists
+            if (typeof hljs !== 'undefined' && hljs.highlightElement) {
+                hljs.highlightElement(codeHighlight);
+            }
         }
 
         function syncScroll() {
@@ -587,7 +549,6 @@
             pre.scrollLeft = textarea.scrollLeft;
         }
 
-        // --- UI Updates ---
         function initFireRatingInput() {
             const container = document.getElementById('fire-input-container');
             container.innerHTML = '';
@@ -607,19 +568,17 @@
                 });
                 container.appendChild(icon);
             }
-            highlightFire(3); // Default
-            
-            // Re-initialize lucide icons inside container immediately so they render on form reset
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            highlightFire(3); 
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
         }
 
         function highlightFire(level) {
-            const container = document.getElementById('fire-input-container');
-            const icons = container.querySelectorAll('div');
+            const icons = document.getElementById('fire-input-container').querySelectorAll('div');
             icons.forEach((icon, index) => {
                 const target = icon.querySelector('svg') || icon.querySelector('i');
                 if (!target) return;
-
                 if(index < level) {
                     target.classList.add('text-fire-500', 'fill-current');
                     target.classList.remove('text-gray-300', 'dark:text-gray-600');
@@ -639,12 +598,10 @@
             return html;
         }
 
-        // --- Navigation & Theming ---
-        function navigate(view) {
+        // define navigate in global scope
+        window.navigate = function(view) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(el => {
-                el.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-primary-600', 'dark:text-primary-400');
-            });
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-primary-600', 'dark:text-primary-400'));
 
             const activeBtn = document.querySelector(`[data-target="${view}"]`);
             if(activeBtn) activeBtn.classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-primary-600', 'dark:text-primary-400');
@@ -654,12 +611,12 @@
                 renderDashboard();
             } else if (view === 'add') {
                 document.getElementById('view-add').classList.remove('hidden');
-                if(!editingRecordId) cancelEditOrReset(); // Reset if entering normally
+                if(!editingRecordId) cancelEditOrReset(); 
             } else if (view === 'list') {
                 document.getElementById('view-list').classList.remove('hidden');
                 renderList();
             }
-        }
+        };
 
         function initTheme() {
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -671,24 +628,14 @@
 
         function toggleTheme() {
             document.documentElement.classList.toggle('dark');
-            if (document.documentElement.classList.contains('dark')) {
-                localStorage.theme = 'dark';
-            } else {
-                localStorage.theme = 'light';
-            }
-            if(!document.getElementById('view-dashboard').classList.contains('hidden')) {
-                renderDashboard();
-            }
+            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            if(!document.getElementById('view-dashboard').classList.contains('hidden')) renderDashboard();
         }
 
-        // --- AI Auto Fill Feature (Extraction only) ---
-        async function analyzeWithAI() {
+        // --- AI 문제 정보 추출 ---
+        window.analyzeWithAI = async function() {
             const link = document.getElementById('f-link').value;
-
-            if(!link) {
-                showToast('분석할 문제 링크를 먼저 입력해주세요.');
-                return;
-            }
+            if(!link) { window.showToast('분석할 문제 링크를 먼저 입력해주세요.'); return; }
 
             const overlay = document.getElementById('loading-overlay');
             document.getElementById('loading-title').innerText = "AI가 문제 정보를 추출하고 있습니다...";
@@ -696,65 +643,42 @@
             overlay.classList.add('flex');
 
             try {
-                const prompt = `주어진 코딩 테스트 문제 링크를 분석하여 관련된 정보를 추출해주세요.
-                [제공된 링크]
-                ${link}
-                `;
-
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
                 const payload = {
-                    contents: [{ parts: [{ text: prompt }] }],
+                    contents: [{ parts: [{ text: `주어진 링크 정보 추출: ${link}` }] }],
                     generationConfig: { 
                         responseMimeType: "application/json",
                         responseSchema: {
                             type: "OBJECT",
                             properties: {
-                                site: { type: "STRING", description: "저지 플랫폼 이름 (예: 백준, 프로그래머스, LeetCode)" },
-                                title: { type: "STRING", description: "문제 이름이나 번호" },
-                                actualDiff: { type: "STRING", description: "예상되는 객관적 난이도 (예: Gold 3, Level 2)" },
-                                algorithm: { type: "STRING", description: "핵심 알고리즘 분류 (쉼표로 구분. 예: DP, DFS)" }
+                                site: { type: "STRING" }, title: { type: "STRING" },
+                                actualDiff: { type: "STRING" }, algorithm: { type: "STRING" }
                             },
                             required: ["site", "title", "actualDiff", "algorithm"]
                         }
                     }
                 };
 
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
+                const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (response.ok) {
-                    const data = await response.json();
-                    let jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
-                    
-                    try {
-                        const parsed = JSON.parse(jsonText);
-                        if(parsed.site) document.getElementById('f-site').value = parsed.site;
-                        if(parsed.title) document.getElementById('f-title').value = parsed.title;
-                        if(parsed.actualDiff) document.getElementById('f-actual-diff').value = parsed.actualDiff;
-                        if(parsed.algorithm) document.getElementById('f-algorithm').value = parsed.algorithm;
-                        
-                        showToast('✅ 정보 추출이 완료되었습니다. 내용을 마저 채워주세요.');
-                    } catch(jsonErr) {
-                        console.error("JSON 파싱 에러:", jsonErr, jsonText);
-                        showToast('❌ AI 결과를 처리하는데 실패했습니다.');
-                    }
-                } else {
-                    showToast('❌ AI API 응답에 실패했습니다.');
+                    const parsed = JSON.parse((await response.json()).candidates?.[0]?.content?.parts?.[0]?.text || "{}");
+                    if(parsed.site) document.getElementById('f-site').value = parsed.site;
+                    if(parsed.title) document.getElementById('f-title').value = parsed.title;
+                    if(parsed.actualDiff) document.getElementById('f-actual-diff').value = parsed.actualDiff;
+                    if(parsed.algorithm) document.getElementById('f-algorithm').value = parsed.algorithm;
+                    window.showToast('✅ 정보 추출이 완료되었습니다.');
                 }
             } catch (error) {
-                console.error("API 요청 에러:", error);
-                showToast('❌ 네트워크 또는 API 호출 에러가 발생했습니다.');
+                console.error(error);
+                window.showToast('❌ 네트워크 또는 파싱 오류 발생');
             } finally {
                 overlay.classList.add('hidden');
                 overlay.classList.remove('flex');
             }
-        }
+        };
 
-        // --- Add & Edit Record Save Management (Feedback generated here) ---
-        async function handleFormSubmit(e) {
+        // --- 기록 저장 (AI 피드백 생성 포함) ---
+        window.handleFormSubmit = async function(e) {
             e.preventDefault();
             
             const link = document.getElementById('f-link').value;
@@ -762,7 +686,6 @@
             const title = document.getElementById('f-title').value;
             const actualDiff = document.getElementById('f-actual-diff').value || '모름';
             const algorithm = document.getElementById('f-algorithm').value || '미분류';
-            
             const date = document.getElementById('f-date').value;
             const time = parseInt(document.getElementById('f-time').value);
             const perceivedDiff = parseInt(document.getElementById('f-perceived-diff').value) || 3;
@@ -779,63 +702,27 @@
             let aiFeedback = "⚠️ AI 채점 및 피드백 생성에 실패했습니다.";
             
             try {
-                const prompt = `당신은 코딩 테스트 채점 및 피드백 전문가입니다. 다음은 사용자가 제출한 정보입니다.
-
-[문제 정보]
-- 사이트: ${site}
-- 문제: ${title}
-
-[사용자 제출 코드]
-\`\`\`
-${code}
-\`\`\`
-
-위 문제의 정답 코드나 최적의 풀이 방식을 검색하여 찾아보고, 사용자가 제출한 코드와 비교해 채점 및 피드백을 작성해주세요.
-
-[요구사항]
-1. 채점 결과 (정답 가능성 예측, 시간/공간 복잡도 분석)
-2. 검색한 정답/모범 풀이와 비교하여 제출한 코드의 잘한 점 및 개선할 점
-3. 더 나은 모범 답안 제안 또는 코드 최적화 팁
-4. 응답은 반드시 마크다운(Markdown) 문법을 사용하여 깔끔하게 정리된 텍스트로 작성하세요.`;
-
+                const prompt = `당신은 코딩 테스트 채점 및 피드백 전문가입니다. 다음은 사용자가 제출한 정보입니다.\n[문제 정보]\n- 사이트: ${site}\n- 문제: ${title}\n[사용자 제출 코드]\n\`\`\`\n${code}\n\`\`\`\n\n위 문제의 정답 코드나 최적의 풀이 방식을 검색하여 찾아보고, 사용자가 제출한 코드와 비교해 채점 및 피드백을 작성해주세요.\n[요구사항]\n1. 채점 결과 (시간/공간 복잡도 분석)\n2. 검색한 모범 풀이와 비교하여 잘한 점 및 개선점\n3. 더 나은 모범 답안 제안\n4. 마크다운 문법 사용\n5. 반드시 한국어로 작성해주세요.`;
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-                const payload = {
-                    contents: [{ parts: [{ text: prompt }] }],
-                    tools: [{ "google_search": {} }] // 검색 기능(Grounding) 활성화
-                };
-
+                
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], tools: [{ "google_search": {} }] })
                 });
 
                 if (response.ok) {
                     const data = await response.json();
                     let combinedText = "";
-                    
-                    if (data.candidates && data.candidates.length > 0) {
-                        const parts = data.candidates[0].content?.parts || [];
-                        for (const part of parts) {
-                            if (part.text) combinedText += part.text;
-                        }
+                    if (data.candidates?.[0]?.content?.parts) {
+                        data.candidates[0].content.parts.forEach(part => { if(part.text) combinedText += part.text; });
                     }
-                    
-                    if (combinedText.trim()) {
-                        aiFeedback = combinedText.trim();
-                    } else if (data.error) {
-                        aiFeedback = `⚠️ **AI 에러 발생:** ${data.error.message}`;
-                    } else {
-                        aiFeedback = "⚠️ AI가 아무런 내용도 반환하지 않았습니다.";
-                    }
+                    aiFeedback = combinedText.trim() || "⚠️ 내용이 반환되지 않았습니다.";
                 } else {
-                    const errData = await response.text();
-                    console.error("API Error Response:", errData);
-                    aiFeedback = `⚠️ **API 응답 오류 (${response.status})**\n\nAI 피드백을 가져오지 못했습니다. 설정(API Key 등)이나 인터넷 연결을 확인해주세요.\n\n상세 로그: \`${errData}\``;
+                    aiFeedback = `⚠️ API 응답 오류 (${response.status})`;
                 }
             } catch (error) {
-                console.error("Feedback Generation Error:", error);
-                aiFeedback = `⚠️ **실행 오류가 발생했습니다**\n\n${error.message}\n\n나중에 [기록 수정] 버튼을 눌러 피드백 생성을 다시 시도할 수 있습니다.`;
+                aiFeedback = `⚠️ 실행 오류 발생\n${error.message}`;
             } finally {
                 overlay.classList.add('hidden');
                 overlay.classList.remove('flex');
@@ -843,48 +730,44 @@ ${code}
 
             const newRecord = {
                 id: editingRecordId || Date.now().toString(),
-                link, site, title,
-                algorithm, date, time,
-                actualDiff, perceivedDiff,
-                resolution, code, notes, retry, aiFeedback
+                link, site, title, algorithm, date, time, actualDiff, perceivedDiff, resolution, code, notes, retry, aiFeedback
             };
 
             if (editingRecordId) {
-                // Update existing
                 const index = records.findIndex(r => String(r.id) === String(editingRecordId));
                 if (index !== -1) records[index] = newRecord;
-                showToast('기록이 수정되었습니다.');
             } else {
-                // Add new
                 records.push(newRecord);
-                showToast('성공적으로 평가 및 저장되었습니다.');
             }
             
-            saveRecords();
+            sortRecords();
             cancelEditOrReset(); 
-            navigate('dashboard');
+            window.navigate('dashboard');
+            window.showToast('성공적으로 평가 및 저장되었습니다.');
+        };
+
+        // 최신 등록 데이터가 항상 위로 올라오도록 정렬 함수 교정
+        function sortRecords() {
+            records.sort((a, b) => {
+                const dateA = new Date(a.date).getTime();
+                const dateB = new Date(b.date).getTime();
+                if (dateA !== dateB) return dateB - dateA;
+                return parseInt(b.id) - parseInt(a.id); // 날짜가 같으면 최신 등록(id)순 정렬
+            });
         }
 
-        function saveRecords() {
-            // 로컬 스토리지 저장 제거, 변수 내에서 정렬만 수행
-            records.sort((a, b) => new Date(b.date) - new Date(a.date));
-        }
-
-        // --- Editing Mode ---
-        function editCurrentRecord() {
+        window.editCurrentRecord = function() {
             if(!currentRecordId) return;
             const record = records.find(r => String(r.id) === String(currentRecordId));
             if(!record) return;
 
             editingRecordId = record.id;
             
-            // Populate Form
             document.getElementById('f-link').value = record.link || '';
             document.getElementById('f-site').value = record.site || '';
             document.getElementById('f-title').value = record.title || '';
             document.getElementById('f-actual-diff').value = record.actualDiff || '';
             document.getElementById('f-algorithm').value = record.algorithm || '';
-            
             document.getElementById('f-date').value = record.date;
             document.getElementById('f-time').value = record.time;
             document.getElementById('f-resolution').value = record.resolution;
@@ -893,10 +776,8 @@ ${code}
             document.getElementById('f-retry').checked = record.retry;
             document.getElementById('f-code').value = record.code || '';
             
-            // Update UI elements
             highlightFire(record.perceivedDiff);
-            const labels = ['매우 쉬움', '쉬움', '보통', '어려움', '매우 어려움'];
-            document.getElementById('fire-label').innerText = labels[record.perceivedDiff-1];
+            document.getElementById('fire-label').innerText = ['매우 쉬움', '쉬움', '보통', '어려움', '매우 어려움'][record.perceivedDiff-1];
             updateCodeSyntax();
 
             document.getElementById('form-title').innerText = "기록 수정하기";
@@ -904,10 +785,10 @@ ${code}
             document.getElementById('btn-cancel').innerText = '수정 취소';
 
             closeModal();
-            navigate('add');
-        }
+            window.navigate('add');
+        };
 
-        function cancelEditOrReset() {
+        window.cancelEditOrReset = function() {
             editingRecordId = null;
             document.getElementById('add-form').reset();
             document.getElementById('f-date').valueAsDate = new Date();
@@ -917,55 +798,59 @@ ${code}
             document.getElementById('form-title').innerText = "새로운 기록 추가";
             document.getElementById('btn-submit').innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> 피드백 생성 및 저장';
             document.getElementById('btn-cancel').innerText = '폼 초기화';
-        }
+        };
 
-        function deleteCurrentRecord() {
-            if(!currentRecordId) return;
+        window.executeDelete = function() {
+            if(!recordToDelete) return;
+            const id = recordToDelete;
             
-            if(confirm('정말 이 기록을 삭제하시겠습니까?')) {
-                records = records.filter(r => String(r.id) !== String(currentRecordId));
-                saveRecords();
-                closeModal();
-                showToast('기록이 삭제되었습니다.');
-                
-                renderDashboard();
-                if(!document.getElementById('view-list').classList.contains('hidden')) {
-                    renderList();
-                }
+            records = records.filter(r => String(r.id) !== String(id));
+            
+            sortRecords();
+            closeConfirmModal();
+            closeModal();
+            window.showToast('기록이 삭제되었습니다.');
+            
+            // 화면 동기화 (대시보드와 문제 목록 모두 무조건 업데이트)
+            renderDashboard();
+            window.renderList();
+
+            const detailPanel = document.getElementById('heatmap-detail-panel');
+            if(detailPanel && !detailPanel.classList.contains('hidden')) {
+                document.getElementById('detail-date-title').innerHTML = `<i data-lucide="target" class="w-5 h-5"></i> 날짜를 선택하세요`;
+                document.getElementById('detail-list-container').innerHTML = `<div class="text-gray-400 dark:text-gray-500 text-sm h-full flex items-center justify-center">활동 잔디에서 특정 칸을 클릭하면 기록을 볼 수 있습니다.</div>`;
+                if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
             }
-        }
+        };
 
-        // --- Dashboard & Charts ---
-        let charts = [];
-        
-        function getChartColors() {
-            const isDark = document.documentElement.classList.contains('dark');
-            return {
-                text: isDark ? '#e5e7eb' : '#374151',
-                grid: isDark ? '#374151' : '#f3f4f6',
-                primary: isDark ? '#60a5fa' : '#3b82f6',
-                primaryAlpha: isDark ? 'rgba(96, 165, 250, 0.5)' : 'rgba(59, 130, 246, 0.5)',
-                palette: isDark ? ['#60a5fa', '#34d399', '#f472b6', '#fbbf24', '#a78bfa'] : ['#3b82f6', '#10b981', '#ec4899', '#f59e0b', '#8b5cf6'],
-                piePalette: isDark ? ['#34d399', '#fbbf24', '#f87171'] : ['#10b981', '#f59e0b', '#ef4444']
-            };
-        }
+        // --- 커스텀 삭제 모달 로직 ---
+        window.openConfirmModal = function(id) {
+            recordToDelete = id;
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        };
 
+        window.closeConfirmModal = function() {
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            recordToDelete = null;
+        };
+
+        // --- 대시보드 렌더링 ---
         function renderDashboard() {
             renderHeatmap();
 
             const total = records.length;
-            const totalTime = records.reduce((sum, r) => sum + r.time, 0);
-            const soloCount = records.filter(r => r.resolution === '스스로 품').length;
-            const soloRatio = total > 0 ? Math.round((soloCount / total) * 100) : 0;
-            const retryCount = records.filter(r => r.retry).length;
-
             document.getElementById('stat-total').innerText = total;
-            document.getElementById('stat-time').innerText = totalTime;
-            document.getElementById('stat-solo').innerText = soloRatio;
-            document.getElementById('stat-retry').innerText = retryCount;
+            document.getElementById('stat-time').innerText = records.reduce((sum, r) => sum + r.time, 0);
+            document.getElementById('stat-solo').innerText = total > 0 ? Math.round((records.filter(r => r.resolution === '스스로 품').length / total) * 100) : 0;
+            document.getElementById('stat-retry').innerText = records.filter(r => r.retry).length;
 
-            charts.forEach(c => c.destroy());
-            charts = [];
+            appCharts.forEach(c => c.destroy());
+            appCharts = [];
             
             const chartsGrid = document.getElementById('charts-grid');
             const chartsEmpty = document.getElementById('charts-empty');
@@ -980,184 +865,107 @@ ${code}
                 chartsGrid.style.display = 'grid'; 
             }
 
-            const c = getChartColors();
-            Chart.defaults.color = c.text;
-            Chart.defaults.borderColor = c.grid;
+            const isDark = document.documentElement.classList.contains('dark');
+            const c = {
+                text: isDark ? '#e5e7eb' : '#374151', grid: isDark ? '#374151' : '#f3f4f6',
+                primary: isDark ? '#60a5fa' : '#3b82f6', primaryAlpha: isDark ? 'rgba(96, 165, 250, 0.5)' : 'rgba(59, 130, 246, 0.5)',
+                palette: isDark ? ['#60a5fa', '#34d399', '#f472b6', '#fbbf24', '#a78bfa'] : ['#3b82f6', '#10b981', '#ec4899', '#f59e0b', '#8b5cf6'],
+                piePalette: isDark ? ['#34d399', '#fbbf24', '#f87171'] : ['#10b981', '#f59e0b', '#ef4444']
+            };
+            
+            if (typeof Chart !== 'undefined' && Chart.defaults) {
+                Chart.defaults.color = c.text; Chart.defaults.borderColor = c.grid;
 
-            // 1. Difficulty
-            const diffCounts = {};
-            records.forEach(r => { diffCounts[r.actualDiff] = (diffCounts[r.actualDiff] || 0) + 1; });
-            const ctxDiff = document.getElementById('difficultyChart').getContext('2d');
-            charts.push(new Chart(ctxDiff, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(diffCounts),
-                    datasets: [{
-                        label: '푼 개수',
-                        data: Object.values(diffCounts),
-                        backgroundColor: c.primaryAlpha,
-                        borderColor: c.primary,
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            }));
+                const diffCounts = {}; records.forEach(r => { diffCounts[r.actualDiff] = (diffCounts[r.actualDiff] || 0) + 1; });
+                appCharts.push(new Chart(document.getElementById('difficultyChart').getContext('2d'), {
+                    type: 'bar', data: { labels: Object.keys(diffCounts), datasets: [{ data: Object.values(diffCounts), backgroundColor: c.primaryAlpha, borderColor: c.primary, borderWidth: 1 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                }));
 
-            // 2. Algorithm
-            const algoCounts = {};
-            records.forEach(r => { 
-                const algos = r.algorithm.split(',').map(a => a.trim());
-                algos.forEach(a => { if(a) algoCounts[a] = (algoCounts[a] || 0) + 1; });
-            });
-            const ctxAlgo = document.getElementById('algorithmChart').getContext('2d');
-            charts.push(new Chart(ctxAlgo, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(algoCounts),
-                    datasets: [{ data: Object.values(algoCounts), backgroundColor: c.palette, borderWidth: 0 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
-            }));
+                const algoCounts = {}; records.forEach(r => { r.algorithm.split(',').forEach(a => { if(a.trim()) algoCounts[a.trim()] = (algoCounts[a.trim()] || 0) + 1; }); });
+                appCharts.push(new Chart(document.getElementById('algorithmChart').getContext('2d'), {
+                    type: 'doughnut', data: { labels: Object.keys(algoCounts), datasets: [{ data: Object.values(algoCounts), backgroundColor: c.palette, borderWidth: 0 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+                }));
 
-            // 3. Resolution
-            const resCounts = { '스스로 품': 0, '약간의 도움 받음': 0, '정답 확인': 0 };
-            records.forEach(r => {
-                let key = Object.keys(resCounts).find(k => r.resolution.includes(k)) || '스스로 품';
-                resCounts[key]++;
-            });
-            const ctxRes = document.getElementById('resolutionChart').getContext('2d');
-            charts.push(new Chart(ctxRes, {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(resCounts),
-                    datasets: [{ data: Object.values(resCounts), backgroundColor: c.piePalette, borderWidth: 0 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-            }));
+                const resCounts = { '스스로 품': 0, '약간의 도움 받음': 0, '정답 확인': 0 };
+                records.forEach(r => { let key = Object.keys(resCounts).find(k => r.resolution.includes(k)) || '스스로 품'; resCounts[key]++; });
+                appCharts.push(new Chart(document.getElementById('resolutionChart').getContext('2d'), {
+                    type: 'pie', data: { labels: Object.keys(resCounts), datasets: [{ data: Object.values(resCounts), backgroundColor: c.piePalette, borderWidth: 0 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                }));
 
-            // 4. Time Trend
-            const recent = [...records].reverse().slice(-10);
-            const ctxTime = document.getElementById('timeTrendChart').getContext('2d');
-            charts.push(new Chart(ctxTime, {
-                type: 'line',
-                data: {
-                    labels: recent.map(r => r.title.length > 10 ? r.title.substring(0,10)+'...' : r.title),
-                    datasets: [{
-                        label: '소요 시간 (분)',
-                        data: recent.map(r => r.time),
-                        borderColor: c.palette[4],
-                        backgroundColor: c.palette[4] + '40',
-                        fill: true,
-                        tension: 0.3
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            }));
+                // 최신 항목 10개를 가져온 뒤 좌->우(과거->최신)가 되도록 reverse
+                const recent = records.slice(0, 10).reverse();
+                appCharts.push(new Chart(document.getElementById('timeTrendChart').getContext('2d'), {
+                    type: 'line', data: { labels: recent.map(r => r.title.length > 10 ? r.title.substring(0,10)+'...' : r.title), datasets: [{ label: '소요 시간 (분)', data: recent.map(r => r.time), borderColor: c.palette[4], backgroundColor: c.palette[4] + '40', fill: true, tension: 0.3 }] },
+                    options: { responsive: true, maintainAspectRatio: false }
+                }));
+            }
         }
 
-        // --- Heatmap (Calendar) ---
         function renderHeatmap() {
             const container = document.getElementById('heatmap-container');
             container.innerHTML = '';
             
             const today = new Date();
-            const daysToDraw = 90;
-            const startDate = new Date(today);
-            startDate.setDate(today.getDate() - daysToDraw + 1);
-
-            const dateCounts = {};
-            records.forEach(r => { dateCounts[r.date] = (dateCounts[r.date] || 0) + 1; });
+            const startDate = new Date(today); startDate.setDate(today.getDate() - 89);
+            const dateCounts = {}; records.forEach(r => { dateCounts[r.date] = (dateCounts[r.date] || 0) + 1; });
 
             let currentDate = new Date(startDate);
-            for(let i=0; i<daysToDraw; i++) {
+            for(let i=0; i<90; i++) {
                 const dateString = currentDate.toISOString().split('T')[0];
                 const count = dateCounts[dateString] || 0;
                 
-                let level = 0;
-                if(count === 1) level = 1;
-                else if(count === 2) level = 2;
-                else if(count === 3) level = 3;
-                else if(count >= 4) level = 4;
-
                 const cell = document.createElement('div');
                 cell.className = 'heatmap-cell';
-                cell.dataset.level = level;
+                cell.dataset.level = count >= 4 ? 4 : count;
                 cell.title = `${dateString}: ${count}문제`;
-                
                 cell.onclick = () => {
                     document.querySelectorAll('.heatmap-cell').forEach(el => el.classList.remove('selected'));
                     cell.classList.add('selected');
-                    showHeatmapDetail(dateString);
+                    window.showHeatmapDetail(dateString);
                 };
-                
                 container.appendChild(cell);
                 currentDate.setDate(currentDate.getDate() + 1);
             }
-            
-            const detailPanel = document.getElementById('heatmap-detail-panel');
-            if(detailPanel) {
-                detailPanel.classList.remove('hidden');
-                document.getElementById('detail-date-title').innerHTML = `<i data-lucide="target" class="w-5 h-5"></i> 날짜를 선택하세요`;
-                document.getElementById('detail-list-container').innerHTML = `<div class="text-gray-400 dark:text-gray-500 text-sm h-full flex items-center justify-center">활동 잔디에서 특정 칸을 클릭하면 기록을 볼 수 있습니다.</div>`;
-                if(typeof lucide !== 'undefined') lucide.createIcons();
-            }
+            document.getElementById('detail-date-title').innerHTML = `<i data-lucide="target" class="w-5 h-5"></i> 날짜를 선택하세요`;
+            document.getElementById('detail-list-container').innerHTML = `<div class="text-gray-400 dark:text-gray-500 text-sm h-full flex items-center justify-center">활동 잔디에서 특정 칸을 클릭하면 기록을 볼 수 있습니다.</div>`;
+            if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
         }
 
-        function showHeatmapDetail(dateString) {
+        window.showHeatmapDetail = function(dateString) {
             const problems = records.filter(r => r.date === dateString);
             document.getElementById('detail-date-title').innerHTML = `<i data-lucide="calendar" class="w-5 h-5"></i> ${dateString} 기록`;
-            
             const container = document.getElementById('detail-list-container');
-            container.innerHTML = '';
             
             if(problems.length === 0) {
                 container.innerHTML = `<div class="text-gray-400 dark:text-gray-500 text-sm h-full flex items-center justify-center mt-4">푼 문제가 없습니다.</div>`;
             } else {
-                problems.forEach(p => {
-                    const el = document.createElement('div');
-                    el.className = 'p-3 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl cursor-pointer hover:border-primary-500 transition-colors flex flex-col gap-1';
-                    el.onclick = () => openModal(p.id);
-                    
-                    const titleStr = p.title.length > 20 ? p.title.substring(0,20)+'...' : p.title;
-                    el.innerHTML = `
+                container.innerHTML = problems.map(p => `
+                    <div class="p-3 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl cursor-pointer hover:border-primary-500 transition-colors flex flex-col gap-1" onclick="window.openModal('${p.id}')">
                         <div class="flex justify-between items-start">
-                            <span class="font-bold text-sm text-primary-600 dark:text-primary-400">${titleStr}</span>
+                            <span class="font-bold text-sm text-primary-600 dark:text-primary-400">${p.title.length > 20 ? p.title.substring(0,20)+'...' : p.title}</span>
                             <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 rounded">${p.actualDiff}</span>
                         </div>
                         <div class="flex items-center justify-between mt-1 text-xs text-gray-500">
                             <span>${p.site} • ${p.time}분</span>
                             <div class="flex">${getFireIconsHTML(p.perceivedDiff).replace(/w-4 h-4/g, 'w-3 h-3')}</div>
                         </div>
-                    `;
-                    container.appendChild(el);
-                });
+                    </div>`).join('');
             }
-            if(typeof lucide !== 'undefined') lucide.createIcons();
-        }
+            if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        };
 
-        // --- List View & Advanced Filters ---
-        function renderList() {
+        window.renderList = function() {
             const tbody = document.getElementById('list-tbody');
             const emptyState = document.getElementById('list-empty');
-            tbody.innerHTML = '';
-
             const searchTerm = document.getElementById('filter-search').value.toLowerCase();
             const onlyRetry = document.getElementById('filter-retry').checked;
             
             let filtered = records;
-            
-            if (onlyRetry) {
-                filtered = filtered.filter(r => r.retry);
-            }
-            if (searchTerm) {
-                filtered = filtered.filter(r => 
-                    r.title.toLowerCase().includes(searchTerm) || 
-                    r.algorithm.toLowerCase().includes(searchTerm) ||
-                    r.site.toLowerCase().includes(searchTerm) ||
-                    (r.link && r.link.toLowerCase().includes(searchTerm))
-                );
-            }
+            if (onlyRetry) filtered = filtered.filter(r => r.retry);
+            if (searchTerm) filtered = filtered.filter(r => r.title.toLowerCase().includes(searchTerm) || r.algorithm.toLowerCase().includes(searchTerm) || r.site.toLowerCase().includes(searchTerm));
 
             if (filtered.length === 0) {
                 emptyState.classList.remove('hidden');
@@ -1165,140 +973,75 @@ ${code}
             } else {
                 emptyState.classList.add('hidden');
                 document.querySelector('#view-list table').parentElement.classList.remove('hidden');
-
-                filtered.forEach(r => {
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors';
-                    tr.onclick = () => openModal(r.id);
-                    
-                    let statusIcon = '<i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>';
-                    if(r.retry) statusIcon = '<i data-lucide="alert-triangle" class="w-5 h-5 text-red-500"></i>';
-
-                    const fireHtml = getFireIconsHTML(r.perceivedDiff);
-                    const titleStr = r.title.length > 25 ? r.title.substring(0, 25) + '...' : r.title;
-
-                    tr.innerHTML = `
-                        <td class="px-6 py-4">${statusIcon}</td>
+                tbody.innerHTML = filtered.map(r => `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors" onclick="window.openModal('${r.id}')">
+                        <td class="px-6 py-4">${r.retry ? '<i data-lucide="alert-triangle" class="w-5 h-5 text-red-500"></i>' : '<i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>'}</td>
                         <td class="px-6 py-4 font-medium">${r.site}</td>
-                        <td class="px-6 py-4 font-bold text-primary-600 dark:text-primary-400 hover:underline">${titleStr}</td>
+                        <td class="px-6 py-4 font-bold text-primary-600 dark:text-primary-400 hover:underline">${r.title.length > 25 ? r.title.substring(0, 25) + '...' : r.title}</td>
                         <td class="px-6 py-4"><span class="px-2 py-1 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded text-xs font-semibold">${r.actualDiff}</span></td>
                         <td class="px-6 py-4 text-sm">${r.algorithm}</td>
-                        <td class="px-6 py-4"><div class="flex">${fireHtml}</div></td>
+                        <td class="px-6 py-4"><div class="flex">${getFireIconsHTML(r.perceivedDiff)}</div></td>
                         <td class="px-6 py-4 text-sm">${r.time}분</td>
                         <td class="px-6 py-4 text-sm text-gray-500">${r.date}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-                if(typeof lucide !== 'undefined') lucide.createIcons();
+                    </tr>`).join('');
+                if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
             }
-        }
+        };
 
-        // --- Modal & Detail View ---
-        function openModal(id) {
+        // --- 모달 로직 ---
+        window.openModal = function(id) {
             const record = records.find(r => String(r.id) === String(id));
             if(!record) return;
             currentRecordId = id;
 
-            // DOM 요소 값 채우기 전 모달을 미리 보이게 하여 Highlight.js가 사이즈를 정상 계산하게 함
-            const modal = document.getElementById('detail-modal');
-            modal.classList.remove('hidden');
+            document.getElementById('detail-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
             document.getElementById('mdl-site').innerText = record.site;
             document.getElementById('mdl-title').innerText = record.title;
-            
             const linkEl = document.getElementById('mdl-link');
-            if(record.link) {
-                linkEl.href = record.link;
-                linkEl.classList.remove('hidden');
-            } else {
-                linkEl.classList.add('hidden');
-            }
+            if(record.link) { linkEl.href = record.link; linkEl.classList.remove('hidden'); } else { linkEl.classList.add('hidden'); }
 
             document.getElementById('mdl-date').innerText = record.date;
             document.getElementById('mdl-time').innerText = record.time;
             document.getElementById('mdl-actual-diff').innerText = record.actualDiff;
             document.getElementById('mdl-algo').innerText = record.algorithm;
-            document.getElementById('mdl-perceived-diff-container').innerHTML = 
-                `<i data-lucide="activity" class="w-4 h-4 text-gray-500"></i> 체감: <div class="flex ml-1">${getFireIconsHTML(record.perceivedDiff)}</div>`;
+            document.getElementById('mdl-perceived-diff-container').innerHTML = `<i data-lucide="activity" class="w-4 h-4 text-gray-500"></i> 체감: <div class="flex ml-1">${getFireIconsHTML(record.perceivedDiff)}</div>`;
             document.getElementById('mdl-resolution').innerText = record.resolution;
             
             const retryBadge = document.getElementById('mdl-retry-badge');
-            if(record.retry) retryBadge.classList.remove('hidden');
-            else retryBadge.classList.add('hidden');
+            if(record.retry) retryBadge.classList.remove('hidden'); else retryBadge.classList.add('hidden');
 
             const notesContent = document.getElementById('mdl-notes');
-            const notesText = record.notes || '*메모가 없습니다.*';
-            if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
-                notesContent.innerHTML = marked.parse(notesText);
-            } else if (typeof marked !== 'undefined' && typeof marked === 'function') {
-                notesContent.innerHTML = marked(notesText);
-            } else {
-                notesContent.innerHTML = `<pre class="whitespace-pre-wrap">${notesText}</pre>`;
-            }
-
-            // AI 피드백 영역 무조건 노출 보장
+            notesContent.innerHTML = (typeof marked !== 'undefined' && record.notes) ? marked.parse(record.notes) : `<pre class="whitespace-pre-wrap">${record.notes || '*메모가 없습니다.*'}</pre>`;
+            
             const aiContainer = document.getElementById('ai-feedback-container');
             if (aiContainer) aiContainer.style.display = 'flex';
             
-            // AI Feedback 렌더링
             const aiContent = document.getElementById('ai-content');
-            const feedbackText = record.aiFeedback || '⚠️ AI 피드백 내용이 없습니다. 하단의 **[기록 수정]** 버튼을 눌러 다시 생성해보세요.';
-            try {
-                if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
-                    aiContent.innerHTML = marked.parse(feedbackText);
-                } else if (typeof marked !== 'undefined' && typeof marked === 'function') {
-                    aiContent.innerHTML = marked(feedbackText);
-                } else {
-                    aiContent.innerHTML = `<pre class="whitespace-pre-wrap">${feedbackText}</pre>`;
-                }
-            } catch(e) {
-                console.error("Markdown parsing error", e);
-                aiContent.innerHTML = `<pre class="whitespace-pre-wrap">${feedbackText}</pre>`;
+            const feedbackText = record.aiFeedback || '⚠️ AI 피드백 내용이 없습니다.';
+            aiContent.innerHTML = typeof marked !== 'undefined' ? marked.parse(feedbackText) : `<pre class="whitespace-pre-wrap">${feedbackText}</pre>`;
+            
+            if (typeof hljs !== 'undefined' && hljs.highlightElement) {
+                document.querySelectorAll('#ai-content pre code').forEach(block => { if (!block.dataset.highlighted) hljs.highlightElement(block); });
             }
 
-            // 마크다운 내 코드블록 하이라이팅
-            if (typeof hljs !== 'undefined') {
-                try {
-                    document.querySelectorAll('#ai-content pre code').forEach((block) => { 
-                        if (!block.dataset.highlighted) {
-                            hljs.highlightElement(block); 
-                        }
-                    });
-                } catch(e) { console.error("Highlight error on AI content:", e); }
-            }
-
-            // 제출 코드 하이라이팅
             const codeEl = document.getElementById('mdl-code');
             codeEl.textContent = record.code;
             codeEl.className = 'rounded-xl text-sm max-h-96 overflow-y-auto !bg-[#1e1e1e] !p-4 border border-gray-700 shadow-inner';
             delete codeEl.dataset.highlighted; 
-            if (typeof hljs !== 'undefined') hljs.highlightElement(codeEl);
+            if (typeof hljs !== 'undefined' && hljs.highlightElement) hljs.highlightElement(codeEl);
 
-            if(typeof lucide !== 'undefined') lucide.createIcons();
-        }
+            document.getElementById('btn-delete-record').onclick = () => window.openConfirmModal(id);
 
-        function closeModal() {
+            if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        };
+
+        window.closeModal = function() {
             document.getElementById('detail-modal').classList.add('hidden');
             document.body.style.overflow = '';
             currentRecordId = null;
-        }
-
-        // --- UI Utilities ---
-        let toastTimeout;
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = message;
-            
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('show'), 10);
-            
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
+        };
     </script>
 </body>
 </html>
